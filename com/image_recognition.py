@@ -202,6 +202,8 @@ class GameAutomationTool:
 
         return unique_locations
 
+    def get_win_pos(self):
+        return  self.client_rect[0],self.client_rect[1]
     def click_position(self, x, y, duration=0.1, button='left',is_abs_pos=False):
         """
         点击游戏窗口内的指定位置

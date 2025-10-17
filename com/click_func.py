@@ -9,6 +9,10 @@ def gotoFb(x, y, w, h):
     click_y = y + h // 2
     return click_x, click_y
 
+def qilai(x, y, w, h):
+    return 1691, 950
+
+
 
 def p(x, y, w, h):
     click_x = x + w - 20

@@ -69,7 +69,8 @@ class InputRecorder:
                     mouse.release(Button.left)  # 释放左键
                 elif event['type'] == 'sleep':
                     time.sleep(event['time'])
-
+                elif event['type'] == 'scroll':
+                    mouse.scroll(0, event['key'])
             except Exception as e:
                 print(f"回放事件时出错: {e}")
 

@@ -2,7 +2,10 @@ import time
 from datetime import datetime
 from threading import Thread
 import cv2
+import pyautogui
 from pynput.keyboard import Key
+from pynput.mouse import Controller, Button
+
 import global_config
 from pynput import keyboard
 from util.util import print_log
@@ -187,10 +190,10 @@ def pre_operation_check():
     while True:
         try:
             if global_config.global_status==0:
-                change_to_20_team(0)
+                #change_to_20_team(0)
                 if global_config.target_careers is not None and global_config.red_careers is not None:
                     switch_careers(global_config.red_careers)
-                print_log(f"20人队伍创建完成,global_status from {global_config.global_status} to 1")
+                #print_log(f"20人队伍创建完成,global_status from {global_config.global_status} to 1")
                 global_config.global_status = 1
             time.sleep(2)
         except Exception as e:
@@ -268,4 +271,34 @@ def press_esc(x,y,w,h):
     keyboard_controller.press(Key.esc)
     time.sleep(0.3)
     keyboard_controller.release(Key.esc)
+    return 0,0
+
+
+def n6_click(a,b,c,d):
+    mouse = Controller()
+    win_x,win_y = global_config.automation_tool.get_win_pos()
+
+    global_config.automation_tool.click_position(177, 380)
+
+    for i in range(4):
+        time.sleep(0.5)
+        pyautogui.moveTo(win_x+687,win_y+1000, duration=0.2)  # 0.2秒内平滑移动到目标位置
+        # 2. 按下鼠标左键（不释放）
+        pyautogui.mouseDown(win_x+687,win_y+1000, button='left')  # 按下左键，button参数默认就是'left'
+        print("已按下左键")
+        # 3. 向右拖动（相对当前位置水平移动drag_distance像素，垂直不动）
+        # 使用moveRel实现相对拖动（因为已经按下左键，移动即拖动）
+        pyautogui.moveRel(1700, 0, duration=0.8)
+        # 4. 释放鼠标左键
+        pyautogui.mouseUp(button='left')
+        print("已释放左键")
+
+
+
+    time.sleep(0.5)
+    global_config.automation_tool.click_position(1347, 1000)
+    time.sleep(0.5)
+    global_config.automation_tool.click_position(1564, 930)
+    time.sleep(0.5)
+    global_config.automation_tool.click_position(1800, 1000)
     return 0,0

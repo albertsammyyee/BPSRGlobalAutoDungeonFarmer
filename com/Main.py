@@ -3,7 +3,7 @@ from threading import Thread
 
 import keyboard_playback
 import global_config
-from call_back_func import global_error_check,pre_operation_check
+from call_back_func import global_error_check,pre_operation_check,n6_click
 from image_recognition import automation_tool
 
 
@@ -36,13 +36,14 @@ def select_red_careers():
         select_red_careers()
 
 if __name__ == '__main__':
+
     import onnxruntime as ort
     # 查看可用的执行 providers
     # print(ort.get_available_providers())
     global_config.automation_tool = automation_tool
     global_config.replay = keyboard_playback.recorder
 
-    num_int = int(input("请输入数字: 1.蒂娜 2.卡尼曼 3.暗影堡垒 4.哥布林巢穴 5.巨龙抓痕 6.巨塔遗迹\r\n"))
+    num_int = int(input("请输入数字: 1.蒂娜 2.卡尼曼 3.暗影堡垒 4.哥布林巢穴 5.巨龙抓痕 6.巨塔遗迹 7.n6卡尼曼\r\n"))
     if num_int == 1:
         global_config.script_json = global_config.get_image_path('resource/json/蒂娜.json')
         global_config.fb_time_out_sec = 300
@@ -64,6 +65,13 @@ if __name__ == '__main__':
     elif num_int == 6:
         global_config.script_json = global_config.get_image_path('resource/json/巨塔遗迹.json')
         global_config.fb_time_out_sec = 540
+    elif num_int == 7:
+        global_config.script_json = global_config.get_image_path('resource/json/n6卡尼曼部落.json')
+        global_config.fb_time_out_sec = 360
+        global_config.is_n6 = True
+        global_config.img_info_arr[1].click_func = n6_click
+
+    # 可选：滚动后等待一段时间
 
 
     automation_tool.find_game_window()
