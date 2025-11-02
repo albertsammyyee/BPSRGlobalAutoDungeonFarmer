@@ -266,13 +266,6 @@ class InputRecorder:
             self.keyboard_listener.stop()
 
 
-def transfer_old_json(input, output):
-    recorder = InputRecorder()
-    with open(input, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-        with open(output, 'w') as f:
-            json.dump(recorder.transform_data(data), f, indent=2)
-
 
 if __name__ == "__main__":
     recorder = InputRecorder()

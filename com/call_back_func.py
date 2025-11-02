@@ -74,21 +74,19 @@ def _time_out():
     fb_times = global_config.fb_times
     begin = time.time()
     print_log(f"启动超时检测线程，当前为第{fb_times}次副本攻略,共计超时{global_config.fb_time_out_times}次，开启时间为：{datetime.now()}")
+    is_checked_boss = False
     while time.time() - begin < global_config.fb_time_out_sec and fb_times == global_config.fb_times:
-        if global_config.global_status == 5:
-            print_log("人物发生死亡，需退出副本重新进入")
-            time.sleep(10)
-            _confirm_time_out_reason()
-            return
-        if global_config.replay.replaying == False:
+        if global_config.replay.replaying is False and is_checked_boss is False:
             for i in range(5):
                 if not checkBoss():
                    time.sleep(1)
-                   pass
                 else:
-                    continue
-            print_log("录制结束，但未进入BOSS阶段，强制超时退出")
-            break
+                    print_log("录制结束，成功进入BOSS阶段")
+                    is_checked_boss = True
+                    break
+            if not is_checked_boss:
+                print_log("录制结束，但未进入BOSS阶段，强制超时退出")
+                break
         time.sleep(1)
     if global_config.global_status == 2 and fb_times == global_config.fb_times:
         curr_time = time.time()
