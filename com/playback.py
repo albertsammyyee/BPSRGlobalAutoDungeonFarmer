@@ -13,6 +13,7 @@ class InputRecorder:
         self.replaying = False
         # 用于停止回放的事件
         self.stop_replay = False
+        self.run_in_back = False
         self.recorded_data = []
 
 
@@ -55,9 +56,10 @@ class InputRecorder:
         self.replaying = True
         self.stop_replay = True
         print("按F12开始回放，再次按F12暂停回放并输出已执行指令（按F10退出进程）")
-        while self.stop_replay==True:
-            time.sleep(0.5)
-        self._replay(data)
+        while True:
+            while self.stop_replay==True:
+                time.sleep(0.5)
+            self._replay(data)
 
     def _replay(self, data):
         """实际执行回放的方法"""
@@ -66,9 +68,7 @@ class InputRecorder:
         mouse = Controller()
         for event in data:
             if self.stop_replay:
-                while self.stop_replay:
-                   time.sleep(1)
-            self.recorded_data.append(event)
+               return
             # 执行事件
             try:
                 print(event)
@@ -76,23 +76,18 @@ class InputRecorder:
                     key = self._get_key(event['key'])
                     if key:
                         keyboard_controller.press(key)
-
                 elif event['type'] == 'key_release':
                     key = self._get_key(event['key'])
                     if key:
                         keyboard_controller.release(key)
-                elif event['type'] == 'mouse_click':
-                    mouse.press(Button.left)  # 按下左键
-                    time.sleep(event['time'])  # 短暂延迟，模拟实际点击时长
-                    mouse.release(Button.left)  # 释放左键
+                elif event['type'] == 'scroll':
+                    mouse.scroll(0, event['key'])
                 elif event['type'] == 'sleep':
                     time.sleep(event['time'])
-
             except Exception as e:
                 print(f"回放事件时出错: {e}")
 
-        self.replaying = False
-        print("回放结束")
+
 
 
 
