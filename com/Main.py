@@ -73,7 +73,7 @@ if __name__ == '__main__':
         global_config.fb_time_out_sec = 540
     elif num_int == 7:
         global_config.script_json = global_config.get_image_path('resource/json/kalamaniam6.json')
-        global_config.fb_time_out_sec = 360
+        global_config.fb_time_out_sec = 600
         global_config.is_n6 = True
         global_config.img_info_arr[1].click_func = n6_click
 
