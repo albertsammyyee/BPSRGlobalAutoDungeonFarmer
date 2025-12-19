@@ -14,7 +14,6 @@ class InputRecorder:
         self.start_time = 0
         self.replaying = False
 
-        # 用于停止回放的事件
         self.stop_replay = False
         self.recorded_data = []
         self.keyboard_listener = keyboard.Listener(
@@ -22,30 +21,24 @@ class InputRecorder:
             on_release=self.on_key_release
         )
 
-        # 热键定义
-        self.toggle_record_key = keyboard.Key.f12  # F12开始/停止录制
-        self.save_key = keyboard.Key.f10  # 保存录制
+        self.toggle_record_key = keyboard.Key.f12  # Start/stop recording
+        self.save_key = keyboard.Key.f10  # Save recording
 
     def get_current_time(self):
-        """获取相对于录制开始的时间"""
         return time.time() - self.start_time if self.start_time else 0
 
     def on_key_press(self, key):
-        """键盘按键按下事件处理"""
-        # 检查是否是控制键
-
         if key == self.toggle_record_key:
             self.toggle_recording()
-            return  # 修改：不返回False，让监听器继续工作
+            return
 
         if key == self.save_key and not self.recording:
             self.save_recording()
-            return  # 修改：不返回False，让监听器继续工作
+            return
 
         if self.recording:
             try:
                 key_str = key.char
-
             except AttributeError:
                 key_str = str(key)
             if key_str in self.pressed_map:
@@ -64,13 +57,10 @@ class InputRecorder:
             })
 
     def on_key_release(self, key):
-        """键盘按键释放事件处理"""
         if self.recording:
-
             try:
                 key_str = key.char
             except AttributeError:
-
                 key_str = str(key)
 
             if key_str in self.pressed_map:
@@ -78,7 +68,7 @@ class InputRecorder:
             else:
                 return
             print({
-                'type': 'key_press',
+                'type': 'key_release',
                 'key': key_str,
                 'time': self.get_current_time()
             })
@@ -89,39 +79,39 @@ class InputRecorder:
             })
 
     def toggle_recording(self):
-        """切换录制状态"""
         if self.recording:
             self.stop_recording()
         else:
             self.start_recording()
 
     def start_recording(self):
-        """开始录制"""
         self.recording = True
         self.recording_data = []
         self.start_time = time.time()
-        print("开始录制... (再次按F12停止，按F10保存录制文件)")
+        print("Recording started... (Press F12 again to stop, F10 to save)")
 
     def stop_recording(self):
-        """停止录制"""
         self.recording = False
-        print(f"停止录制，共记录了 {len(self.recording_data)} 个事件")
+        print(f"Recording stopped. {len(self.recording_data)} events recorded.")
 
     def save_recording(self, filename=None):
-        """保存录制数据到文件"""
         if not self.recording_data:
-            print("没有可保存的录制数据")
+            print("No recording data to save.")
             return
-        print(os.path.abspath(__file__))
+
         if not filename:
-            filename = f"{os.path.abspath(__file__).replace("recorder.py", "")}/../recorder/recording_{int(time.time())}.json"
+            save_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'resource', 'json'))
+            os.makedirs(save_dir, exist_ok=True)
+            filename = os.path.join(save_dir, 'n6卡尼曼部落.json')
+
         final_record = self.transform_data(self.recording_data)
+
         try:
-            with open(filename, 'w') as f:
+            with open(filename, 'w', encoding='utf-8') as f:
                 json.dump(final_record, f, indent=2)
-            print(f"录制数据已保存到 {filename}")
+            print(f"Recording saved to {filename}")
         except Exception as e:
-            print(f"保存失败: {e}")
+            print(f"Save failed: {e}")
 
     def transform_data(self, datas):
         result = []
@@ -136,133 +126,105 @@ class InputRecorder:
                 "type": data['type'],
                 "key": data['key']
             })
-
             last_time = curr_time
         return result
 
     def load_recording(self, filename):
-        """从文件加载录制数据"""
         try:
             with open(filename, 'r') as f:
                 return json.load(f)
         except Exception as e:
-            print(f"加载失败: {e}")
+            print(f"Load failed: {e}")
             return None
 
     def on_f98_press(self, key):
         if key == keyboard.Key.f9:
             self.stop_replay = not self.stop_replay
-
         if key == keyboard.Key.f8:
             sys.exit(0)
 
     def start_replay(self, filename=None):
-        """回放录制的数据"""
         if self.replaying:
-            print("正在回放中...")
+            print("Already replaying...")
             return
-        keyboard.Listener(
-            on_press=self.on_f98_press
-        ).start()
-        # 如果指定了文件名，则加载文件；否则使用当前录制的数据
+
+        keyboard.Listener(on_press=self.on_f98_press).start()
         data = self.load_recording(filename) if filename else self.recording_data
 
         if not data:
-            print("没有可回放的数据")
+            print("No data to replay.")
             return
 
         self.replaying = True
         self.stop_replay = False
-        print("开始回放... (按F9可暂停,F8结束进程,并输出已执行指令)")
+        print("Replaying... (F9 to pause, F8 to stop and output executed commands)")
         Thread(target=self._replay, args=(data,), daemon=True).start()
 
     def _replay(self, data):
-        """实际执行回放的方法"""
-
         keyboard_controller = keyboard.Controller()
         stopped = False
         for event in data:
             if self.stop_replay:
                 stopped = True
-                print("暂停回放，输出已回放数据：")
+                print("Paused replay. Executed so far:")
                 print(self.recorded_data)
                 while self.stop_replay:
                     time.sleep(1)
-            if stopped == True:
-                print("继续回放，清空已输出得数据：")
+            if stopped:
+                print("Resuming replay. Clearing log.")
                 stopped = False
                 self.recorded_data.clear()
 
-            # 执行事件
             try:
                 if event['type'] == 'key_press':
                     key = self._get_key(event['key'])
                     if key:
                         keyboard_controller.press(key)
-
                 elif event['type'] == 'key_release':
                     key = self._get_key(event['key'])
                     if key:
                         keyboard_controller.release(key)
                 elif event['type'] == 'sleep':
                     time.sleep(event['time'])
-
             except Exception as e:
-                print(f"回放事件时出错: {e}")
+                print(f"Replay error: {e}")
             self.recorded_data.append(event)
+
         self.replaying = False
-        print("回放结束")
+        print("Replay finished.")
 
     def _get_key(self, key_str):
-        """将按键字符串转换为pynput识别的按键对象"""
-        # 特殊按键
-        if key_str == 'Key.space':
-            return keyboard.Key.space
-        elif key_str == 'Key.enter':
-            return keyboard.Key.enter
-        elif key_str == 'Key.backspace':
-            return keyboard.Key.backspace
-        elif key_str == 'Key.tab':
-            return keyboard.Key.tab
-        elif key_str == 'Key.esc':
-            return keyboard.Key.esc
-        elif key_str == 'Key.shift':
-            return keyboard.Key.shift
-        elif key_str == 'Key.ctrl':
-            return keyboard.Key.ctrl
-        elif key_str == 'Key.alt':
-            return keyboard.Key.alt
-        elif key_str == 'Key.up':
-            return keyboard.Key.up
-        elif key_str == 'Key.down':
-            return keyboard.Key.down
-        elif key_str == 'Key.left':
-            return keyboard.Key.left
-        elif key_str == 'Key.right':
-            return keyboard.Key.right
-
-        # 普通字符按键
+        special_keys = {
+            'Key.space': keyboard.Key.space,
+            'Key.enter': keyboard.Key.enter,
+            'Key.backspace': keyboard.Key.backspace,
+            'Key.tab': keyboard.Key.tab,
+            'Key.esc': keyboard.Key.esc,
+            'Key.shift': keyboard.Key.shift,
+            'Key.ctrl': keyboard.Key.ctrl,
+            'Key.alt': keyboard.Key.alt,
+            'Key.up': keyboard.Key.up,
+            'Key.down': keyboard.Key.down,
+            'Key.left': keyboard.Key.left,
+            'Key.right': keyboard.Key.right
+        }
+        if key_str in special_keys:
+            return special_keys[key_str]
         if len(key_str) == 1:
             return key_str
-
         return None
 
     def start(self):
-        """启动监听器"""
-        print("输入录制器已启动")
-        print("按F12开始/停止录制")
-        print("录制停止时按F10保存录制")
-        print("按ESC退出程序")
-
-        # 启动监听器
+        print("Recorder running.")
+        print("F12 = Start/Stop recording")
+        print("F10 = Save")
+        print("ESC = Exit")
         self.keyboard_listener.start()
-
-        # 保持程序运行
         try:
             while True:
                 time.sleep(1)
         except KeyboardInterrupt:
-            print("程序退出")
+            print("Exiting...")
             self.keyboard_listener.stop()
 
 
@@ -277,4 +239,3 @@ def transfer_old_json(input, output):
 if __name__ == "__main__":
     recorder = InputRecorder()
     recorder.start()
-    time.sleep(10000)
