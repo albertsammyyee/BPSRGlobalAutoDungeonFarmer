@@ -1,0 +1,32 @@
+# 星痕共鸣自动刷普本
+
+## 初始化
+1. 下载本项目文件到本地非中文路径下
+2. 安装python3.13(如果之前安装DPS检测插件时已经下载了，那就不需要再下载)
+3. 执行根目录下的powershell脚本：Setup-Env.ps1 ，进行python依赖安装
+4. 使用start.ps1启动脚本即可
+## 脚本使用方法
+1. 游戏分辨率改为1920*1080
+2. 人物站在对应的副本圈上，显示F按键
+3. 使用start.ps1启动脚本，按控制台提示输入对应数字即可
+4. 详细内容也可查看doc文档
+## 交流群
+QQ：975901806
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+ ## 若脚本有帮到您，可以稍微支持一下哦
+ <img width="664" height="786" alt="image" src="https://github.com/user-attachments/assets/0d570a16-2d7b-4b6a-8b47-00f75245dcf3" />

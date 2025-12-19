@@ -1,0 +1,78 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.env
+.venv
+*.venv
+
+# PyInstaller
+# 通常情况下，打包生成的文件不纳入版本控制
+build/
+dist/
+*.spec
+
+# 测试相关
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# IDE 配置文件
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-*
+.DS_Store  # macOS 系统文件
+
+# 日志文件
+logs/
+*.log
+
+# 本地配置文件（如密钥、数据库信息等）
+local_settings.py
+*.ini
+*.conf
+*.env.local
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# 其他临时文件
+tmp/
+temp/
