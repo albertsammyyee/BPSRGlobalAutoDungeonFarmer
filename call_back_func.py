@@ -65,7 +65,7 @@ def begin_fb_loop():
 def checkBoss():
     check_boss_name = global_config.automation_tool.ocr_check(600, 20, 700, 100)
     for str, _ in check_boss_name:
-        if "落梦" in str:
+        if "伊" in str or "罗" in str or "蒂娜" in str or "勇士" in str or "特" in str or "丹" in str:
             return True
     return False
 
@@ -74,19 +74,22 @@ def _time_out():
     fb_times = global_config.fb_times
     begin = time.time()
     print_log(f"启动超时检测线程，当前为第{fb_times}次副本攻略,共计超时{global_config.fb_time_out_times}次，开启时间为：{datetime.now()}")
-    is_checked_boss = False
     while time.time() - begin < global_config.fb_time_out_sec and fb_times == global_config.fb_times:
-        if global_config.replay.replaying is False and is_checked_boss is False:
+        if global_config.global_status == 5:
+            print_log("人物发生死亡，需退出副本重新进入")
+            time.sleep(10)
+            _confirm_time_out_reason()
+            return
+        if global_config.replay.replaying == False:
             for i in range(5):
                 if not checkBoss():
                    time.sleep(1)
+                   pass
                 else:
-                    print_log("录制结束，成功进入BOSS阶段")
-                    is_checked_boss = True
-                    break
-            if not is_checked_boss:
-                print_log("录制结束，但未进入BOSS阶段，强制超时退出")
-                break
+                    print_log(f"录制结束，成功进入BOSS阶段，退出超时检测线程")
+                    return
+            print_log("录制结束，但未进入BOSS阶段，强制超时退出")
+            break
         time.sleep(1)
     if global_config.global_status == 2 and fb_times == global_config.fb_times:
         curr_time = time.time()
@@ -187,8 +190,10 @@ def pre_operation_check():
     while True:
         try:
             if global_config.global_status==0:
+                #change_to_20_team(0)
                 if global_config.target_careers is not None and global_config.red_careers is not None:
                     switch_careers(global_config.red_careers)
+                #print_log(f"20人队伍创建完成,global_status from {global_config.global_status} to 1")
                 global_config.global_status = 1
             time.sleep(2)
         except Exception as e:
@@ -248,6 +253,18 @@ def change_to_20_team(retry_times):
     time.sleep(0.3)
     keyboard_controller.release(Key.esc)
     time.sleep(1)
+    # is_success = False
+    # # 校验是否已经创建20人队伍
+    # team_ocr = global_config.automation_tool.ocr_check(1462,200,250,100)
+    # for str, _ in team_ocr:
+    #     if "队" in str:
+    #         is_success = True
+    # if is_success:
+    #     print_log(f"20人队伍创建完成,global_status from {global_config.global_status} to 1")
+    #     global_config.gwslobal_status = 1
+    # else:
+    #     change_to_20_team(retry_times+1)
+
 
 def press_esc(x,y,w,h):
     keyboard_controller = keyboard.Controller()
@@ -256,35 +273,32 @@ def press_esc(x,y,w,h):
     keyboard_controller.release(Key.esc)
     return 0,0
 
-def click_difficulty(a,b,c,d):
-    global_config.automation_tool.click_position(177, 270)
-    return 0,0
 
-# def n6_click(a,b,c,d):
-#     mouse = Controller()
-#     win_x,win_y = global_config.automation_tool.get_win_pos()
-#
-#     global_config.automation_tool.click_position(177, 380)
-#
-#     for i in range(4):
-#         time.sleep(0.5)
-#         pyautogui.moveTo(win_x+687,win_y+1000, duration=0.2)  # 0.2秒内平滑移动到目标位置
-#         # 2. 按下鼠标左键（不释放）
-#         pyautogui.mouseDown(win_x+687,win_y+1000, button='left')  # 按下左键，button参数默认就是'left'
-#         print("已按下左键")
-#         # 3. 向右拖动（相对当前位置水平移动drag_distance像素，垂直不动）
-#         # 使用moveRel实现相对拖动（因为已经按下左键，移动即拖动）
-#         pyautogui.moveRel(1700, 0, duration=0.8)
-#         # 4. 释放鼠标左键
-#         pyautogui.mouseUp(button='left')
-#         print("已释放左键")
-#
-#
-#
-#     time.sleep(0.5)
-#     global_config.automation_tool.click_position(1347, 1000)
-#     time.sleep(0.5)
-#     global_config.automation_tool.click_position(1564, 930)
-#     time.sleep(0.5)
-#     global_config.automation_tool.click_position(1800, 1000)
-#     return 0,0
+def n6_click(a,b,c,d):
+    mouse = Controller()
+    win_x,win_y = global_config.automation_tool.get_win_pos()
+
+    global_config.automation_tool.click_position(177, 380)
+
+    for i in range(4):
+        time.sleep(0.5)
+        pyautogui.moveTo(win_x+687,win_y+1000, duration=0.2)  # 0.2秒内平滑移动到目标位置
+        # 2. 按下鼠标左键（不释放）
+        pyautogui.mouseDown(win_x+687,win_y+1000, button='left')  # 按下左键，button参数默认就是'left'
+        print("已按下左键")
+        # 3. 向右拖动（相对当前位置水平移动drag_distance像素，垂直不动）
+        # 使用moveRel实现相对拖动（因为已经按下左键，移动即拖动）
+        pyautogui.moveRel(1700, 0, duration=0.8)
+        # 4. 释放鼠标左键
+        pyautogui.mouseUp(button='left')
+        print("已释放左键")
+
+
+
+    time.sleep(0.5)
+    global_config.automation_tool.click_position(1347, 1000)
+    time.sleep(0.5)
+    global_config.automation_tool.click_position(1564, 930)
+    time.sleep(0.5)
+    global_config.automation_tool.click_position(1800, 1000)
+    return 0,0

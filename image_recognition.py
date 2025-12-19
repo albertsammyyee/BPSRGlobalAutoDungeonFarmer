@@ -276,7 +276,7 @@ class GameAutomationTool:
                             continue
                         positions = self.find_img(img_info.path, game_img, img_info.threshold)
                         if positions:
-                            # print_log(f"找到图片{img_info.path}")
+                            print_log(f"找到图片{img_info.path}")
                             self.click_pos(positions, img_info.click_func)
                             if img_info.status_change_to:
                                 print_log(f"change global_status from {global_config.global_status} to {img_info.status_change_to}")
