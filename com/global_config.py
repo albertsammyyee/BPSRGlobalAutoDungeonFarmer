@@ -103,8 +103,8 @@ class ocr_info:
 
 ocr_info_arr = {
     "副本入口": ocr_info("F", (1371, 534, 280, 80), operation=press_f, check_when_status=[1]),  # 检查是否有“F”
-    "副本内": ocr_info("退出副本", (39, 226, 296, 33), operation=begin_fb_loop, check_when_status=[1]),  # 检查是否有“退出”
-    "副本外": ocr_info("阿斯特", (41, 228, 83, 26), operation=change_to_outer_fb, check_when_status=[2]),  # 检查是否有“阿斯特”
+    "副本内": ocr_info("Leave", (39, 226, 296, 33), operation=begin_fb_loop, check_when_status=[1]),  # 检查是否有“退出”
+    "副本外": ocr_info("Asterleeds", (41, 228, 83, 26), operation=change_to_outer_fb, check_when_status=[2]),  # 检查是否有“阿斯特”
     "未退队": ocr_info("超过2人", (721, 265, 476, 50), operation=leave_team, check_when_status=[1, 3]),
     # 你的队伍人数超过2人，无法进行此模式
 }

@@ -340,7 +340,7 @@ class GameAutomationTool:
 
 
 # 配置参数
-GAME_WINDOW_TITLE = "星痕共鸣"  # 替换为你的游戏窗口标题（支持部分匹配）
+GAME_WINDOW_TITLE = "Blue Protocol: Star Resonance"  # 替换为你的游戏窗口标题（支持部分匹配）
 
 # 初始化工具
 automation_tool = GameAutomationTool(
